@@ -1,0 +1,52 @@
+# Author:   Aayush Joglekar <aayush.joglekar@surf.nl>
+
+easyblock = 'CMakeMake'
+
+name = 'rocminfo'
+version = '1.0.0'
+_rocm_version = '7.2.3'
+versionsuffix = f'-ROCm-{_rocm_version}'
+
+homepage = 'https://github.com/RadeonOpenCompute/rocminfo'
+description = """ROCm Application for Reporting System Info"""
+docurls = ['https://rocm.docs.amd.com/projects/rocminfo/']
+
+toolchain = {'name': 'GCCcore', 'version': '14.3.0'}
+
+github_account = 'ROCm'
+source_urls = ['https://github.com/ROCm/rocm-systems/archive/']
+sources = [f"rocm-{_rocm_version}.tar.gz"]
+checksums = ['e90cfd8694af28a56433c8827a581ee12a4ba835f0d952436741d9e0f3f8685b']
+
+builddependencies = [
+    ('binutils', '2.44'),
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('Python', '3.13.5'),  # Needed for 'rocm_agent_enumerator' which is a Python script
+    ('glog', '0.7.1'),
+    ('ROCm-LLVM', '22.0.0', '-ROCm-7.2.3'),
+]
+
+# Set the source directory to the projects/rocminfo folder within the extracted archive
+srcdir = "projects/rocminfo"
+
+configopts = "-DCMAKE_EXE_LINKER_FLAGS='-Wl,--disable-new-dtags'"
+configopts += " -DROCRTST_BLD_TYPE=Release"
+configopts += " -DROCM_DIR=%(installdir)s"
+
+sanity_check_paths = {
+    'files': ['bin/rocminfo', 'bin/rocm_agent_enumerator'],
+    'dirs': [],
+}
+
+# Sanity check commands fail on machines without AMD GPU (device not found)
+# TODO: Reinstate them later to enable crosscompilation
+
+# sanity_check_commands = [
+#    'rocminfo --help',
+#    'rocm_agent_enumerator'
+# ]
+
+moduleclass = 'tools'
