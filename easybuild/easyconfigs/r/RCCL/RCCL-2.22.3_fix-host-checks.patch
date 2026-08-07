@@ -1,13 +1,12 @@
-Bypasses hardcoded host-system hardware checks and monolithic ROCm version parsing.
+Bypasses hardcoded host-system hardware checks for memory.
 
-Original issue: RCCL attempts to read `${ROCM_PATH}/.info/version` to determine the ROCm version. 
-In EasyBuild environment, there is no centralized ROCm installation path, causing this version parsing to fail.
-Second, it uses raw bash commands to check host RAM and dynamically calculate the number of parallel linker jobs.
-In EasyBuild environment, these commands often fail or miscalculate, leading to CMake errors or OOM crashes during the linking phase.
+Original issue: RCCL uses raw bash commands to check host RAM and dynamically calculate
+the number of parallel linker jobs. In EasyBuild environment, these commands often fail
+or miscalculate, leading to CMake errors or OOM crashes during the linking phase.
 
-This patch hardcodes the ROCm version check to `6.4.1` and explicitly limits `num_linker_jobs` to `4`
-to ensure stable compilation. It should be re-evaluated for future releases to see if upstream introduces
-standard CMake flags to override these dynamic host checks.
+This patch explicitly limits `num_linker_jobs` to `4` to ensure stable compilation.
+
+For ROCm version, use EXPLICIT_ROCM_VERSION CMake variable (already supported in standalone RCCL).
 
 Author: Aayush Joglekar (aayush.joglekar@surf.nl)
 
@@ -15,17 +14,8 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 45ba954f..0d631a2a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -173,7 +173,7 @@ message(STATUS "${COMPILER_EXE_NAME} HIP version:    ${hip_version_string}")
- 
- ## Check for ROCm version
- execute_process(
--  COMMAND         bash "-c" "cat ${ROCM_PATH}/.info/version"
-+  COMMAND  bash "-c" "echo 6.4.1"
-   OUTPUT_VARIABLE rocm_version_string
- )
- string(REGEX MATCH "([0-9]+)\\.([0-9]+)\\.([0-9]+)" rocm_version_matches ${rocm_version_string})
-@@ -830,26 +830,9 @@ endif()
- 
+@@ -1304,26 +1304,9 @@ endif()
+
  ## Set RCCL link options
  ## Find out available memory
 -execute_process(
@@ -37,7 +27,7 @@ index 45ba954f..0d631a2a 100644
 -  execute_process(
 -    COMMAND bash "-c" "free | grep -o '[[:digit:]]*' | head -1"
 -    OUTPUT_VARIABLE memory_max_string)
--  ## memory_max_string holds the free memory in KB  
+-  ## memory_max_string holds the free memory in KB
 -  if (${memory_max_string} MATCHES "^[0-9]+")
 -    math(EXPR memory_in_gb "${memory_max_string} / (1024 * 1024)") ## KB to GB conversion
 -  else()
