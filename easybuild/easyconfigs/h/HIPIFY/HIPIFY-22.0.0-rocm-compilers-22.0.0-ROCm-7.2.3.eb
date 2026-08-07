@@ -19,7 +19,8 @@ sources = [f'rocm-{_rocm_version}.tar.gz']
 patches = ['HIPIFY-22.0.0_do-not-hardcode-compiler.patch']
 checksums = [
     {'rocm-7.2.3.tar.gz': '5d0adbdffa866f3ca3e94da8ac92304dc97272dcd9c3440b15943fc0bc7c8ad8'},
-    {'HIPIFY-22.0.0_do-not-hardcode-compiler.patch': '564820ee718adf21e35e36c153978deb49fee8fb15b17bbc0b7d12cc0ef555d9'},
+    {'HIPIFY-22.0.0_do-not-hardcode-compiler.patch':
+        '564820ee718adf21e35e36c153978deb49fee8fb15b17bbc0b7d12cc0ef555d9'},
 ]
 
 builddependencies = [

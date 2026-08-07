@@ -56,7 +56,8 @@ sanity_check_paths = {
 }
 
 # Sanity check commands disabled as they require Python packages from requirements.txt
-# Users should install: python3 -m pip install -r $EBROOTROCPROFILERMINCOMPUTE/libexec/rocprofiler-compute/requirements.txt
+# Users should install: python3 -m pip install -r
+# $EBROOTROCPROFILERMINCOMPUTE/libexec/rocprofiler-compute/requirements.txt
 # sanity_check_commands = [
 #     'rocprof-compute --help',
 # ]
