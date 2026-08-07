@@ -38,7 +38,7 @@ builddependencies = [
 
 dependencies = [
     ('HIP', _rocm_version),
-    ('roctracer', '4.1.0'),
+    ('rocTracer', '4.1.0'),
     ('googletest', '1.17.0'),
     ('rocm-smi', '7.6.0'),
     ('rocprofiler-register', '0.4.0'),
