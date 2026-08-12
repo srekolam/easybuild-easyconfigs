@@ -1,4 +1,4 @@
-# Author:   Aayush Joglekar <aayush.joglekar@surf.nl>
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
 
 easyblock = 'ROCmComponent'
 
