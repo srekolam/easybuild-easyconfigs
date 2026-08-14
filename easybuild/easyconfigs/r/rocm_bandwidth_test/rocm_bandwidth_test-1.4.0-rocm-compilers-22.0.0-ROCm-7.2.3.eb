@@ -28,7 +28,8 @@ sources = [{
 patches = ['%(name)s-%(version)s_fix-install-paths.patch']
 checksums = [
     None,  # rocm_bandwidth_test-rocm-7.2.3.tar.gz
-    'aa0b136f3755b94588acd465756f9b32f92e2d353addc5ba5973b6f430b2eb5a',  # rocm_bandwidth_test-1.4.0_fix-install-paths.patch
+    # rocm_bandwidth_test-1.4.0_fix-install-paths.patch
+    'aa0b136f3755b94588acd465756f9b32f92e2d353addc5ba5973b6f430b2eb5a',
 ]
 
 builddependencies = [
@@ -54,11 +55,15 @@ sanity_check_paths = {
 }
 
 postinstallcmds = [
-    'patchelf --force-rpath --set-rpath \'$ORIGIN/../lib:$ORIGIN/../lib64\' %(installdir)s/bin/rocm_bandwidth_test || true',
-    'patchelf --force-rpath --set-rpath \'$ORIGIN\' %(installdir)s/lib/libamd_tb.so.2025.06.09 || true',
-    'patchelf --force-rpath --set-rpath \'$ORIGIN\' %(installdir)s/lib/libamd_work_bench.so.2025.06.09 || true',
-    'patchelf --force-rpath --set-rpath \'$ORIGIN\' %(installdir)s/lib64/libamd_tb.so.2025.06.09 || true',
-    'patchelf --force-rpath --set-rpath \'$ORIGIN\' %(installdir)s/lib64/libamd_work_bench.so.2025.06.09 || true',
+    "patchelf --force-rpath --set-rpath '$ORIGIN/../lib:$ORIGIN/../lib64' "
+    "%(installdir)s/bin/rocm_bandwidth_test || true",
+    "patchelf --force-rpath --set-rpath '$ORIGIN' %(installdir)s/lib/libamd_tb.so.2025.06.09 || true",
+    "patchelf --force-rpath --set-rpath '$ORIGIN' "
+    "%(installdir)s/lib/libamd_work_bench.so.2025.06.09 || true",
+    "patchelf --force-rpath --set-rpath '$ORIGIN' "
+    "%(installdir)s/lib64/libamd_tb.so.2025.06.09 || true",
+    "patchelf --force-rpath --set-rpath '$ORIGIN' "
+    "%(installdir)s/lib64/libamd_work_bench.so.2025.06.09 || true",
 ]
 
 moduleclass = 'tools'
