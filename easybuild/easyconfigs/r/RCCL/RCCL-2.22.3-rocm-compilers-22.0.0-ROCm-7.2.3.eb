@@ -25,9 +25,9 @@ patches = [
     'RCCL-2.22.3_fix-host-checks.patch',
 ]
 checksums = [
-    {'rocm-7.2.3.tar.gz': '0cb83b3a0552d8b38b05c182753c68dd15432d99769da6aead889e30f14367d7'},
-    {'RCCL-2.22.3_fix-hardcoded_paths.patch': 'ec0147347157f3c2431ead5e2a7f772040fadbe742d97cdc71eeffcdd44d4dfe'},
-    {'RCCL-2.22.3_fix-host-checks.patch': '0ad1b3891d539c4202a70f0c7bd7b8ef3b78707300eea7c40bb08dd859a7e405'},
+    '0cb83b3a0552d8b38b05c182753c68dd15432d99769da6aead889e30f14367d7',  # rocm-7.2.3.tar.gz
+    'ec0147347157f3c2431ead5e2a7f772040fadbe742d97cdc71eeffcdd44d4dfe',  # RCCL-2.22.3_fix-hardcoded_paths.patch
+    '0ad1b3891d539c4202a70f0c7bd7b8ef3b78707300eea7c40bb08dd859a7e405',  # RCCL-2.22.3_fix-host-checks.patch
 ]
 
 builddependencies = [
