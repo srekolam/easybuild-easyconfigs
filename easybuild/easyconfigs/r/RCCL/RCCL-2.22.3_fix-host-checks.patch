@@ -1,15 +1,3 @@
-Bypasses hardcoded host-system hardware checks for memory.
-
-Original issue: RCCL uses raw bash commands to check host RAM and dynamically calculate
-the number of parallel linker jobs. In EasyBuild environment, these commands often fail
-or miscalculate, leading to CMake errors or OOM crashes during the linking phase.
-
-This patch explicitly limits `num_linker_jobs` to `4` to ensure stable compilation.
-
-For ROCm version, use EXPLICIT_ROCM_VERSION CMake variable (already supported in standalone RCCL).
-
-Author: Aayush Joglekar (aayush.joglekar@surf.nl)
-
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 45ba954f..0d631a2a 100644
 --- a/CMakeLists.txt
