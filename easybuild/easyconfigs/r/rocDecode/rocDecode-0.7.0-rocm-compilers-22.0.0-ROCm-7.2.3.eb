@@ -32,6 +32,7 @@ dependencies = [
     ('FFmpeg', '7.1.2', '', ('GCCcore', '14.3.0')),
     ('HIP', _rocm_version),
     ('ROCm-LLVM', '22.0.0', f'-ROCm-{_rocm_version}'),
+    ('rocprofiler-register', '0.4.0'),
 ]
 
 configopts = '-DCMAKE_C_COMPILER=$EBROOTROCMMINLLVM/bin/amdclang '
@@ -44,14 +45,18 @@ configopts += '-DLIBDRM_AMDGPU_LIBRARY=$EBROOTLIBDRM/lib/libdrm_amdgpu.so '
 configopts += '-DCMAKE_INSTALL_PREFIX=%(installdir)s '
 
 postinstallcmds = [
-    "patchelf --force-rpath --set-rpath '$ORIGIN' "
-    "%(installdir)s/lib/librocdecode.so.1.7.0 || true",
-    "patchelf --force-rpath --set-rpath '$ORIGIN' "
-    "%(installdir)s/lib/librocdecode-host.so.1.0.0 || true",
-    "patchelf --force-rpath --set-rpath '$ORIGIN' "
-    "%(installdir)s/lib64/librocdecode.so.1.7.0 || true",
-    "patchelf --force-rpath --set-rpath '$ORIGIN' "
-    "%(installdir)s/lib64/librocdecode-host.so.1.0.0 || true",
+    'patchelf --force-rpath --set-rpath '
+    '"$ORIGIN:$EBROOTLIBVA/lib:$EBROOTLIBDRM/lib:$EBROOTHIP/lib:$EBROOTROCPROFILERMINREGISTER/lib" '
+    '%(installdir)s/lib/librocdecode.so.1.7.0 || true',
+    'patchelf --force-rpath --set-rpath '
+    '"$ORIGIN:$EBROOTLIBVA/lib:$EBROOTLIBDRM/lib:$EBROOTHIP/lib:$EBROOTROCPROFILERMINREGISTER/lib:$EBROOTFFMPEG/lib" '
+    '%(installdir)s/lib/librocdecode-host.so.1.0.0 || true',
+    'patchelf --force-rpath --set-rpath '
+    '"$ORIGIN:$EBROOTLIBVA/lib:$EBROOTLIBDRM/lib:$EBROOTHIP/lib:$EBROOTROCPROFILERMINREGISTER/lib" '
+    '%(installdir)s/lib64/librocdecode.so.1.7.0 || true',
+    'patchelf --force-rpath --set-rpath '
+    '"$ORIGIN:$EBROOTLIBVA/lib:$EBROOTLIBDRM/lib:$EBROOTHIP/lib:$EBROOTROCPROFILERMINREGISTER/lib:$EBROOTFFMPEG/lib" '
+    '%(installdir)s/lib64/librocdecode-host.so.1.0.0 || true',
 ]
 
 sanity_check_paths = {
