@@ -35,7 +35,7 @@ dependencies = [
     ('HIP', _rocm_version),
     ('rocBLAS', '5.2.0'),
     ('rocSPARSE', '4.2.0'),
-    ('rocSOLVER', '4.2.0'),
+    ('rocSOLVER', '3.32.0'),
     ('hipBLAS-common', '1.4.0')
 ]
 
