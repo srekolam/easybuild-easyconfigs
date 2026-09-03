@@ -21,13 +21,13 @@ github_account = 'ROCm'
 source_urls = [GITHUB_SOURCE]
 sources = [f'rocm-{_rocm_version}.tar.gz']
 patches = [
-    'RCCL-2.22.3_fix-hardcoded_paths.patch',
-    'RCCL-2.22.3_fix-host-checks.patch',
+    'RCCL-2.22.3_fix-hardcoded_paths-rocm723.patch',
+    'RCCL-2.22.3_fix-host-checks-rocm723.patch',
 ]
 checksums = [
     '0cb83b3a0552d8b38b05c182753c68dd15432d99769da6aead889e30f14367d7',  # rocm-7.2.3.tar.gz
-    'df6f80288487a2604445c36b6780250abd2933f11a1a45fb8b1c04ee6b1357aa',  # RCCL-2.22.3_fix-hardcoded_paths.patch
-    '4f2d31a17bd708921ea8e978ff7e9bdae3724751f7f695b652838d680de58cf8',  # RCCL-2.22.3_fix-host-checks.patch
+    'df6f80288487a2604445c36b6780250abd2933f11a1a45fb8b1c04ee6b1357aa',  # RCCL-2.22.3_fix-hardcoded_paths-rocm723.patch
+    '4f2d31a17bd708921ea8e978ff7e9bdae3724751f7f695b652838d680de58cf8',  # RCCL-2.22.3_fix-host-checks-rocm723.patch
 ]
 
 builddependencies = [
