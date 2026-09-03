@@ -136,9 +136,8 @@ components = [
 
 ]
 
-# Disable sanity checks - OpenMP files not built with build_openmp_offload: False
+# Note: OpenMP offload files not built with build_openmp_offload: False
 # Installation is complete and functional
-skip_sanity_check = True
 
 modextravars = {
     'HIP_DEVICE_LIB_PATH': '%(installdir)s/amdgcn/bitcode',
