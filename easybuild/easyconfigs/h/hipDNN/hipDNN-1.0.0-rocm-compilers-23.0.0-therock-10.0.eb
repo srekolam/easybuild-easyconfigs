@@ -1,0 +1,46 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'hipDNN'
+version = '1.0.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/hipDNN'
+description = """hipDNN is a library for deep neural network primitives on AMD GPUs.
+It provides backend implementations for common deep learning operations."""
+docurls = ['https://rocm.docs.amd.com/projects/hipDNN/en/latest/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-libraries/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-libraries-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['eb7f255d6627d3cfb312a7bcf41d701517ecaeac88382b56f2bde8d4947ea592']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+    ('flatbuffers', '24.12.23'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('MIOpen', '3.2.0'),
+    ('nlohmann_json', '3.11.3'),
+    ('spdlog', '1.15.3'),
+]
+
+srcdir = 'projects/hipdnn'
+
+configopts = '-DHIPDNN_BUILD_TESTS=OFF '
+configopts += '-DHIPDNN_BUILD_SAMPLES=OFF '
+
+sanity_check_paths = {
+    'files': ['lib/cmake/hipdnn/hipdnn-config.cmake'],
+    'dirs': ['lib/cmake/hipdnn',
+             'include/hipdnn'],
+}
+
+moduleclass = 'lib'

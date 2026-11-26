@@ -1,0 +1,52 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'hipBLAS'
+version = '3.2.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/hipBLAS'
+description = """hipBLAS is a Basic Linear Algebra Subprograms (BLAS) marshalling
+library with multiple supported backends. It sits between your application and a
+'worker' BLAS library, where it marshals inputs to the backend library and marshals
+results to your application. hipBLAS exports an interface that doesn't require the
+client to change, regardless of the chosen backend. Currently, hipBLAS supports
+rocBLAS and cuBLAS backends."""
+docurls = ['https://rocm.docs.amd.com/projects/hipBLAS/en/latest/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-libraries/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-libraries-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['eb7f255d6627d3cfb312a7bcf41d701517ecaeac88382b56f2bde8d4947ea592']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+    ('Python', '3.13.5'),
+    ('PyYAML', '6.0.2'),
+]
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('rocBLAS', '5.2.0'),
+    ('rocSPARSE', '4.2.0'),
+    ('rocSOLVER', '3.32.0'),
+    ('hipBLAS-common', '1.4.0')
+]
+
+srcdir = 'projects/hipblas'
+
+configopts = '-DHIP_DIR=$EBROOTHIP '
+configopts += '-DBUILD_GTEST=OFF -DBUILD_LAPACK=OFF '
+
+sanity_check_paths = {
+    'files': ['lib/cmake/hipblas/hipblas-config.cmake',
+              'include/hipblas/hipblas.h'],
+    'dirs': ['lib/cmake/hipblas',
+             'include/hipblas'],
+}
+
+moduleclass = 'lib'

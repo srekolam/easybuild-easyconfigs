@@ -1,0 +1,107 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'rocprofiler-compute'
+version = '3.4.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/rocm-systems/tree/develop/projects/rocprofiler-compute'
+description = """
+A kernel-level profiling tool for machine learning/HPC workloads running on AMD MI GPUs.
+ROCm Compute Profiler (formerly Omniperf) is a performance analysis tool for profiling
+machine learning/HPC workloads running on AMD GPUs.
+
+Note: This package requires additional Python dependencies to be installed. See requirements.txt
+in the installation directory for the full list of required packages."""
+docurls = ['https://rocm.docs.amd.com/projects/rocprofiler-compute/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-systems/archive/refs/tags/']
+sources = [
+    {
+        'download_filename': f'therock-{_therock_version}.tar.gz',
+        'filename': f'rocm-systems-therock-{_therock_version}.tar.gz',
+    },
+    # Bundled dependencies for airgap builds (empty directories in therock tarball)
+    {
+        'download_filename': '12.1.0.tar.gz',
+        'filename': 'fmt-12.1.0.tar.gz',
+        'source_urls': ['https://github.com/fmtlib/fmt/archive/refs/tags/'],
+    },
+    {
+        'download_filename': 'develop.tar.gz',
+        'filename': 'json-develop.tar.gz',
+        'source_urls': ['https://github.com/nlohmann/json/archive/refs/heads/'],
+    },
+    # Vendored pyyaml for standalone Python packaging
+    {
+        'download_filename': '6.0.2.tar.gz',
+        'filename': 'pyyaml-6.0.2.tar.gz',
+        'source_urls': ['https://github.com/yaml/pyyaml/archive/refs/tags/'],
+    },
+]
+checksums = [
+    'f30517ed6d9e18cde104eb487f173e62fed0175083a9498ca383f8136a9f4eec',  # rocm-systems-therock-10.0.tar.gz
+    'ea7de4299689e12b6dddd392f9896f08fb0777ac7168897a244a6d6085043fea',  # fmt-12.1.0.tar.gz
+    'eb1b7f10ca90c18cdc986236df41e42a82e32a219ede20c205a53591ef45d456',  # json-develop.tar.gz
+    '9377c381ac3fccad8df73d96b5139ef8b1a2c57a0d913e95ab0a2275d66b5caa',  # pyyaml-6.0.2.tar.gz
+]
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+    ('git', '2.50.1'),
+    ('pkgconf', '2.4.3'),
+]
+
+dependencies = [
+    ('Python', '3.13.5'),
+    ('Python-bundle-PyPI', '2025.07'),
+    ('PyYAML', '6.0.2'),
+    ('rocprofiler-sdk', '1.1.0'),
+]
+
+# rocprofiler-compute is located in projects/rocprofiler-compute within rocm-systems archive
+srcdir = 'projects/%(name)s'
+
+# Move already-extracted bundled dependencies into external/ directories for airgap builds
+# Remove empty placeholder dirs first, then move extracted sources
+_external_dir = f'%(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-compute/src/lib/external'
+_vendored_dir = f'%(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-compute/src/vendored'
+preconfigopts = ' && '.join([
+    f'rmdir {_external_dir}/fmt',
+    f'mv %(builddir)s/fmt-12.1.0 {_external_dir}/fmt',
+    f'rmdir {_external_dir}/json',
+    f'mv %(builddir)s/json-develop {_external_dir}/json',
+    f'rmdir {_vendored_dir}/pyyaml',
+    f'mv %(builddir)s/pyyaml-6.0.2 {_vendored_dir}/pyyaml',
+    'true',  # End with a command that succeeds
+]) + ' && '
+
+# Disable Python dependency checking as we handle it through EasyBuild
+configopts = '-DCHECK_PYTHON_DEPS=OFF '
+
+# Remove precompiled roofline binaries that depend on platform-specific ROCm libraries
+# These binaries are not portable and cause RPATH sanity check failures
+# Users who need these can build them separately with appropriate ROCm libraries
+postinstallcmds = [
+    'rm -f %(installdir)s/bin/roofline-*',
+    'echo "Python dependencies listed in %(installdir)s/libexec/rocprofiler-compute/requirements.txt"',
+    'echo "Install with: python3 -m pip install -r %(installdir)s/libexec/rocprofiler-compute/requirements.txt"',
+]
+
+sanity_check_paths = {
+    'files': ['bin/rocprof-compute', 'libexec/rocprofiler-compute/requirements.txt'],
+    'dirs': ['libexec/rocprofiler-compute',
+             'share/rocprofiler-compute'],
+}
+
+# Sanity check commands disabled as they require Python packages from requirements.txt
+# Users should install: python3 -m pip install -r
+# $EBROOTROCPROFILERMINCOMPUTE/libexec/rocprofiler-compute/requirements.txt
+# sanity_check_commands = [
+#     'rocprof-compute --help',
+# ]
+
+moduleclass = 'tools'

@@ -1,0 +1,57 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'rocdecode'
+version = '1.9.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/rocm-systems/tree/develop/projects/rocdecode'
+description = """rocDecode is a high-performance video decode SDK for AMD GPUs. It provides
+hardware-accelerated video decoding using the Video Core Next (VCN) engine on AMD GPUs,
+supporting formats like H.264, HEVC, VP9, and AV1. The library offers both low-level
+decode APIs and integration with popular multimedia frameworks."""
+docurls = ['https://rocm.docs.amd.com/projects/rocDecode/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-systems/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-systems-therock-{_therock_version}.tar.gz',
+}]
+patches = ['rocdecode-1.9.0_fix-compiler-path-therock.patch']
+checksums = [
+    'f30517ed6d9e18cde104eb487f173e62fed0175083a9498ca383f8136a9f4eec',  # rocm-systems-therock-10.0.tar.gz
+    '06de35c94aca1ec121ccb09ce690bebd4429b4c0e8b0f9863b88e9013ab0d51b',  # rocdecode-1.9.0_fix-compiler-path-therock.patch
+]
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+    ('pkgconf', '2.4.3'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('libva', '2.24.1', '', ('GCCcore', '14.3.0')),
+    ('libdrm', '2.4.125', '', ('GCCcore', '14.3.0')),
+    ('FFmpeg', '7.1.2', '', ('GCCcore', '14.3.0')),
+    ('rocprofiler-register', f'0.6.0', f'-therock-{_therock_version}', ('GCCcore', '14.3.0')),
+]
+
+# rocdecode is located in projects/rocdecode within rocm-systems archive
+srcdir = 'projects/%(name)s'
+
+configopts = '-DBUILD_TESTS=OFF '
+configopts += '-DLIBVA_LIBRARY=$EBROOTLIBVA/lib/libva.so '
+configopts += '-DLIBVA_DRM_LIBRARY=$EBROOTLIBVA/lib/libva-drm.so '
+configopts += '-DLIBVA_INCLUDE_DIR=$EBROOTLIBVA/include '
+configopts += '-DLIBDRM_AMDGPU_LIBRARY=$EBROOTLIBDRM/lib/libdrm_amdgpu.so '
+configopts += '-DLIBDRM_AMDGPU_INCLUDE_DIR=$EBROOTLIBDRM/include '
+
+sanity_check_paths = {
+    'files': ['lib/librocdecode.%s' % SHLIB_EXT],
+    'dirs': ['include/rocdecode', 'lib/cmake/rocdecode'],
+}
+
+moduleclass = 'lib'

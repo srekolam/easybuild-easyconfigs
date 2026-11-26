@@ -1,0 +1,58 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'composable_kernel'
+version = '1.0.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/composable_kernel'
+description = """Composable Kernel (CK) is a library that provides highly optimized
+GPU kernels for machine learning and high-performance computing workloads on AMD GPUs."""
+docurls = ['https://rocm.docs.amd.com/projects/composable_kernel/en/latest/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-libraries/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-libraries-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['eb7f255d6627d3cfb312a7bcf41d701517ecaeac88382b56f2bde8d4947ea592']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+    ('Python', '3.13.5'),
+    ('pkgconf', '2.4.3'),
+    ('git', '2.54.0'),
+    ('half', '2.2.0', '', SYSTEM),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('SQLite', '3.50.1'),
+    ('zlib', '1.3.1'),
+    ('Z3', '4.15.1'),
+]
+
+srcdir = 'projects/composablekernel'
+
+# GPU targets matching CMakeLists.txt defaults for therock-10.0
+# Supported: gfx908, gfx90a, gfx942, gfx950, gfx1030, gfx1100, gfx1101, gfx1102, gfx1103, gfx1200, gfx1201
+# Note: gfx900, gfx906, gfx90c are explicitly unsupported
+amdgcn_capabilities = ['gfx908', 'gfx90a', 'gfx942', 'gfx950', 'gfx1030', 'gfx1100', 'gfx1101', 'gfx1102', 'gfx1103', 'gfx1200', 'gfx1201']
+
+configopts = '-DBUILD_CK_EXAMPLES=OFF '
+configopts += '-DBUILD_CK_TUTORIALS=OFF '
+configopts += '-DBUILD_CK_PROFILER=OFF '
+configopts += '-DBUILD_CK_TILE_ENGINE_TESTS=OFF '
+configopts += '-DBUILD_CK_TILE_FMHA_TESTS=OFF '
+
+sanity_check_paths = {
+    'files': ['include/ck/ck.hpp',
+              'include/ck/version.h'],
+    'dirs': ['include/ck',
+             'include/ck_tile'],
+}
+
+moduleclass = 'lib'

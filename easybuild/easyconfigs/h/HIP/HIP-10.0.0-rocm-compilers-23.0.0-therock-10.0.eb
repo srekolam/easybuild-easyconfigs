@@ -1,0 +1,99 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'Bundle'
+
+name = 'HIP'
+version = '10.0.0'
+_therock_version = '10.0'  # GitHub tag version for therock releases
+
+homepage = 'https://github.com/ROCm/HIP'
+description = """HIP is a C++ Runtime API and Kernel Language that allows
+developers to create portable applications for AMD and NVIDIA GPUs from single
+source code."""
+docurls = ['https://rocmdocs.amd.com/projects/HIP/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+    ('CppHeaderParser', '2.7.4'),
+]
+
+dependencies = [
+    ('libglvnd', '1.7.0'),
+    ('rocm-cmake', '0.14.0'),
+    ('rocm-core', '10.0.0', f'-therock-{_therock_version}', ('GCCcore', '14.3.0')),
+    ('numactl', '2.0.19'),
+    ('Perl', '5.40.2'),
+    ('rocminfo', '1.0.0'),
+    ('rocprofiler-register', '0.6.0', f'-therock-{_therock_version}'),
+    ('Z3', '4.15.1'),
+]
+
+default_easyblock = 'CMakeMake'
+
+components = [
+    ('HIPCC', '23.0.0', {
+        'source_urls': ['https://github.com/ROCm/llvm-project/archive/refs/tags/'],
+        'sources': [{
+            'download_filename': f'therock-{_therock_version}.tar.gz',
+            'filename': f'llvm-project-therock-{_therock_version}.tar.gz',
+        }],
+        'checksums': [
+            '92dcfe3d2e1ca52b460c7f168d8d74e47cd17370fa8bdffb919174115f94ab0f',  # llvm-project-therock-10.0.tar.gz
+        ],
+        # HIPCC is located in amd/hipcc within llvm-project archive
+        'start_dir': f'llvm-project-therock-{_therock_version}/amd/hipcc',
+    }),
+    ('HIP', '%(version)s', {
+        'source_urls': ['https://github.com/ROCm/rocm-systems/archive/refs/tags/'],
+        'sources': [{
+            'download_filename': f'therock-{_therock_version}.tar.gz',
+            'filename': f'rocm-systems-therock-{_therock_version}.tar.gz',
+        }],
+        'checksums': [
+            'f30517ed6d9e18cde104eb487f173e62fed0175083a9498ca383f8136a9f4eec',  # rocm-systems-therock-10.0.tar.gz
+        ],
+        # HIP/CLR is located in projects/clr within rocm-systems archive
+        'start_dir': f'rocm-systems-therock-{_therock_version}/projects/clr',
+        'configopts': f'-DHIP_COMMON_DIR=%(builddir)s/rocm-systems-therock-{_therock_version}/projects/hip/ ' +
+                      '-DHIP_PLATFORM=amd -DHIPCC_BIN_DIR=%(installdir)s/bin ' +
+                      '-DCLR_BUILD_HIP=ON -DCLR_BUILD_OCL=OFF'
+    }),
+]
+
+sanity_check_paths = {
+    'files': ['bin/%s' % x for x in ['hipcc', 'hipconfig']] +
+             ['include/hip/hip_common.h', 'include/hip/hip_runtime.h', 'lib/libamdhip64.%s' % SHLIB_EXT],
+    'dirs': [],
+}
+sanity_check_commands = [
+    'hipcc --help',
+    'hipconfig --full'
+]
+
+modextravars = {
+    'HIP_COMPILER': 'amdclang',
+    'HIP_INCLUDE_PATH': '%(installdir)s/include',
+    'HIP_LIB_PATH': '%(installdir)s/lib',
+    'HIP_PATH': '%(installdir)s',
+    'HIP_RUNTIME': 'rocclr',
+    'HIPCC_PATH': '%(installdir)s',
+    'ROCM_PATH': '%(installdir)s',
+}
+
+modluafooter = """
+setenv("DEVICE_LIB_PATH", pathJoin(os.getenv("EBROOTROCMMINLLVM") or "", "amdgcn/bitcode"))
+setenv("HIP_CLANG_INCLUDE_PATH", pathJoin(os.getenv("EBROOTROCMMINLLVM") or "", "include"))
+setenv("HIP_CLANG_PATH", pathJoin(os.getenv("EBROOTROCMMINLLVM") or "", "bin"))
+setenv("HSA_PATH", os.getenv("EBROOTROCMMINLLVM") or "")
+"""
+
+modtclfooter = """
+setenv DEVICE_LIB_PATH $::env(EBROOTROCMMINLLVM)/amdgcn/bitcode
+setenv HIP_CLANG_INCLUDE_PATH $::env(EBROOTROCMMINLLVM)/include
+setenv HIP_CLANG_PATH $::env(EBROOTROCMMINLLVM)/bin
+setenv HSA_PATH $::env(EBROOTROCMMINLLVM)
+"""
+
+moduleclass = 'tools'

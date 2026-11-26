@@ -1,0 +1,36 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'CMakeMake'
+
+name = 'rocm-cmake'
+version = '0.14.0'
+_therock_version = '10.0'  # GitHub tag version for therock releases
+
+homepage = 'https://github.com/ROCm/rocm-cmake'
+description = """ROCM cmake modules provides cmake modules for common build
+tasks needed for the ROCM software stack"""
+docurls = ['https://rocm.docs.amd.com/projects/ROCmCMakeBuildTools/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-cmake/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-cmake-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['f832a52ead9788c9cc6d40e2fb84818c3e8e82b06079f26623a719cd891efd61']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+]
+
+sanity_check_paths = {
+    'files': ['share/rocm/cmake/ROCMConfig.cmake', 'share/rocm/cmake/ROCMConfigVersion.cmake',
+              'share/rocmcmakebuildtools/cmake/ROCMChecks.cmake',
+              'share/rocmcmakebuildtools/cmake/ROCMCppCheck.cmake',
+              'share/rocmcmakebuildtools/cmake/ROCMCreatePackage.cmake',
+              'share/rocmcmakebuildtools/cmake/ROCMSetupVersion.cmake'],
+    'dirs': ['share/rocm/cmake', 'share/rocmcmakebuildtools/cmake'],
+}
+
+moduleclass = 'tools'

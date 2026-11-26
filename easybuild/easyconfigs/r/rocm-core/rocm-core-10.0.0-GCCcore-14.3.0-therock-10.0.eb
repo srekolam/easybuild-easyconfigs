@@ -1,0 +1,43 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'CMakeMake'
+
+name = 'rocm-core'
+version = '10.0.0'
+_therock_version = '10.0'  # GitHub tag version for therock releases
+versionsuffix = f'-therock-{_therock_version}'
+
+homepage = 'https://github.com/ROCm/rocm-core'
+description = """ROCm-core is a foundational package that provides ROCm release versioning
+and installation path information via header files."""
+
+toolchain = {'name': 'GCCcore', 'version': '14.3.0'}
+
+source_urls = ['https://github.com/ROCm/rocm-systems/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-systems-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['f30517ed6d9e18cde104eb487f173e62fed0175083a9498ca383f8136a9f4eec']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+    ('binutils', '2.44'),
+]
+
+# rocm-core is located in projects/rocm-core within rocm-systems archive
+srcdir = 'projects/rocm-core'
+
+configopts = "-DROCM_VERSION=%(version)s "
+
+sanity_check_paths = {
+    'dirs': ['include/rocm-core', '.info'],
+    'files': [
+        'include/rocm-core/rocm_version.h',
+        'include/rocm-core/rocm_getpath.h',
+        'lib/librocm-core.so',
+        '.info/version'
+    ]
+}
+
+moduleclass = 'lib'

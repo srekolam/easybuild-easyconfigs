@@ -1,0 +1,40 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'hipBLAS-common'
+version = '1.4.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/hipBLAS'
+description = """hipBLAS-common provides common header files and utilities shared between
+hipBLAS and hipBLASLt libraries."""
+docurls = ['https://rocm.docs.amd.com/projects/hipBLAS/en/latest/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-libraries/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-libraries-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['eb7f255d6627d3cfb312a7bcf41d701517ecaeac88382b56f2bde8d4947ea592']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+]
+
+srcdir = 'projects/hipblas-common'
+
+sanity_check_paths = {
+    'files': ['lib/cmake/hipblas-common/hipblas-common-config.cmake',
+              'include/hipblas-common/hipblas-common.h'],
+    'dirs': ['lib/cmake/hipblas-common',
+             'include/hipblas-common'],
+}
+
+moduleclass = 'lib'

@@ -1,0 +1,29 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ConfigureMake'
+
+name = 'libmnl'
+version = '1.0.5'
+
+homepage = 'https://www.netfilter.org/projects/libmnl/'
+description = """libmnl is a minimalistic user-space library oriented to Netlink developers.
+There are a lot of common tasks in parsing, validating, constructing of both the Netlink header
+and TLVs that are repetitive and easy to get wrong. This library aims to provide simple helpers
+that allows you to re-use code and to avoid re-inventing the wheel."""
+
+toolchain = {'name': 'GCCcore', 'version': '14.3.0'}
+
+source_urls = ['https://www.netfilter.org/projects/libmnl/files/']
+sources = [SOURCE_TAR_BZ2]
+checksums = ['274b9b919ef3152bfb3da3a13c950dd60d6e2bcd54230ffeca298d03b40d0525']
+
+builddependencies = [
+    ('binutils', '2.44'),
+]
+
+sanity_check_paths = {
+    'files': ['lib/libmnl.%s' % SHLIB_EXT, 'lib/pkgconfig/libmnl.pc', 'include/libmnl/libmnl.h'],
+    'dirs': [],
+}
+
+moduleclass = 'lib'

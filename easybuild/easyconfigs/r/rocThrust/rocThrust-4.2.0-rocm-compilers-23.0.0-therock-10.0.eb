@@ -1,0 +1,44 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'rocThrust'
+version = '4.2.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/rocThrust'
+description = """Thrust is a parallel algorithm library. It has been ported to HIP and ROCm,
+which use the rocPRIM library. The HIP-ported library works on HIP and ROCm software.
+Currently there is no CUDA backend in place."""
+docurls = ['https://rocm.docs.amd.com/projects/rocThrust/en/latest/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-libraries/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-libraries-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['eb7f255d6627d3cfb312a7bcf41d701517ecaeac88382b56f2bde8d4947ea592']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('rocPRIM', '4.2.0'),
+]
+
+# Build from the projects/rocthrust subdirectory
+srcdir = 'projects/rocthrust'
+
+sanity_check_paths = {
+    'files': ['lib/cmake/rocthrust/rocthrust-config.cmake',
+              'include/thrust/rocthrust_version.hpp'],
+    'dirs': ['lib/cmake/rocthrust',
+             'share/doc/rocthrust',
+             'include/thrust'],
+}
+
+moduleclass = 'lib'

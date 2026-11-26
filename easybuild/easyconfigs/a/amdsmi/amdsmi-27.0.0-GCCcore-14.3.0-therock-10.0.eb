@@ -1,0 +1,81 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'CMakeMake'
+
+name = 'amdsmi'
+version = '27.0.0'
+_therock_version = '10.0'  # GitHub tag version for therock releases
+# amdsmi includes esmi as a component, which needs to be copied into the amdsmi sources.
+# Required version can be found in amdsmi/CMakeLists.txt by searching for ESMI_GIT_HASH.
+_esmi_git_hash = 'd494a3194ceb4cc4dbb2debf9fcbe8773c6d3bef'
+versionsuffix = f'-therock-{_therock_version}'
+
+homepage = 'https://github.com/ROCm/amdsmi'
+description = """
+The AMD System Management Interface (AMD SMI) library offers a unified tool for managing and monitoring
+GPUs, particularly in high-performance computing environments. It provides a user-space interface that
+allows applications to control GPU operations, monitor performance, and retrieve information about the
+system's drivers and GPUs."""
+docurls = ['https://rocm.docs.amd.com/projects/amdsmi/en/latest/']
+
+toolchain = {'name': 'GCCcore', 'version': '14.3.0'}
+
+# Use rocm-systems tarball which contains amdsmi as a subproject
+local_rocm_systems_source = f'rocm-systems-therock-{_therock_version}.tar.gz'
+source_urls = [
+    'https://github.com/ROCm/rocm-systems/archive/refs/tags/',
+    'https://github.com/amd/esmi_ib_library/archive/',
+]
+sources = [
+    {
+        'download_filename': f'therock-{_therock_version}.tar.gz',
+        'filename': local_rocm_systems_source,
+    },
+    {
+        'download_filename': f'{_esmi_git_hash}.tar.gz',
+        'filename': f'esmi_ib_library-{_esmi_git_hash}.tar.gz',
+    },
+]
+checksums = [
+    {local_rocm_systems_source: 'f30517ed6d9e18cde104eb487f173e62fed0175083a9498ca383f8136a9f4eec'},
+    {f'esmi_ib_library-{_esmi_git_hash}.tar.gz': '8f9cf10922276ca35872ca0bc27e29e717a472ba704a575c5497622b62049e75'},
+]
+
+builddependencies = [
+    ('binutils', '2.44'),
+    ('CMake', '3.31.8'),
+    ('pkgconf', '2.4.3'),
+    # Needed as amdsmi tries to find git to determine commit hash it was built from
+    ('git', '2.50.1'),
+]
+
+dependencies = [
+    # Needed as amdsmi is a python script
+    ('Python', '3.13.5'),
+    ('libdrm', '2.4.125'),
+    ('libnl', '3.3.0'),  # Required for network interface functionality
+    ('libmnl', '1.0.5'),  # Required for network interface functionality
+]
+
+# Copy esmi into amdsmi sources
+preconfigopts = (f"cp -r %(builddir)s/esmi_ib_library-{_esmi_git_hash} "
+                 f"%(builddir)s/rocm-systems-therock-{_therock_version}/projects/amdsmi/esmi_ib_library && ")
+
+# amdsmi is located in projects/amdsmi within rocm-systems archive
+srcdir = 'projects/amdsmi'
+
+sanity_check_paths = {
+    'files': [f'lib/libamd_smi.{SHLIB_EXT}',
+              'include/amd_smi/amdsmi.h'],
+    'dirs': ['lib/cmake/amd_smi',
+             'share/doc/amd-smi-lib']
+}
+
+# Sanity check commands require kernel drivers to be loaded.
+# The command itself will result in an exit code of non-zero, therefore try to grep
+# the tool version, which is always present.
+sanity_check_commands = [
+    f'amd-smi version | grep "AMDSMI Tool: {version}"',
+]
+
+moduleclass = 'lib'

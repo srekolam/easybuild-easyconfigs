@@ -1,0 +1,51 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'rdc'
+version = '1.3.1'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/rocm-systems/tree/develop/projects/rdc'
+description = """ROCm Data Center (RDC) Tool is a system management tool for AMD GPUs in data centers.
+It provides APIs and command-line tools for monitoring GPU health, power consumption, temperature,
+memory usage, and other telemetry data. RDC supports remote monitoring via gRPC."""
+docurls = ['https://rocm.docs.amd.com/projects/rdc/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-systems/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-systems-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['f30517ed6d9e18cde104eb487f173e62fed0175083a9498ca383f8136a9f4eec']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+    ('pkgconf', '2.4.3'),
+]
+
+dependencies = [
+    ('amdsmi', '27.0.0', '-therock-10.0', ('GCCcore', '14.3.0')),
+    ('gRPC', '1.76.0', '', ('GCCcore', '14.3.0')),
+    ('protobuf', '31.1', '', ('GCCcore', '14.3.0')),
+    ('libcap', '2.25', '', ('GCCcore', '14.3.0')),
+    ('rocm-core', '10.0.0', f'-therock-{_therock_version}', ('GCCcore', '14.3.0')),
+]
+
+# rdc is located in projects/rdc within rocm-systems archive
+start_dir = 'projects/%(name)s'
+
+configopts = '-DBUILD_STANDALONE=ON '
+configopts += '-DBUILD_RUNTIME=ON '
+configopts += '-DBUILD_TESTS=OFF '
+configopts += '-DROCM_DIR=%(installdir)s '
+configopts += '-DGRPC_DESIRED_VERSION=1.76.0 '
+
+sanity_check_paths = {
+    'files': ['bin/rdcd', 'bin/rdci', 'lib/librdc_bootstrap.%s' % SHLIB_EXT],
+    'dirs': ['include/rdc'],
+}
+
+moduleclass = 'tools'

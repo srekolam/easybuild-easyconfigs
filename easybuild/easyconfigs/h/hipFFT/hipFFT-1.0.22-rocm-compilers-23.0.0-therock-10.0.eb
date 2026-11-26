@@ -1,0 +1,47 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'hipFFT'
+version = '1.0.22'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/hipFFT'
+description = """hipFFT is a FFT marshalling library with multiple supported backends.
+It sits between the application and a 'worker' FFT library, marshalling inputs
+into the backend library and marshalling results back to the application."""
+docurls = ['https://rocm.docs.amd.com/projects/hipFFT/en/latest/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-libraries/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-libraries-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['eb7f255d6627d3cfb312a7bcf41d701517ecaeac88382b56f2bde8d4947ea592']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('rocFFT', '1.0.36'),
+]
+
+srcdir = 'projects/hipfft'
+
+configopts = '-DBUILD_CLIENTS_TESTS=OFF '
+configopts += '-DBUILD_CLIENTS_BENCHMARKS=OFF '
+configopts += '-DBUILD_CLIENTS_SAMPLES=OFF '
+
+sanity_check_paths = {
+    'files': [f'lib/libhipfft.{SHLIB_EXT}',
+              'lib/cmake/hipfft/hipfft-config.cmake',
+              'include/hipfft/hipfft.h'],
+    'dirs': ['lib/cmake/hipfft',
+             'include/hipfft'],
+}
+
+moduleclass = 'lib'

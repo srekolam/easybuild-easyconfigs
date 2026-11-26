@@ -1,0 +1,140 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'rocprofiler-sdk'
+version = '1.1.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/rocprofiler-sdk'
+description = """ROCprofiler-SDK is AMD's tooling infrastructure, providing a hardware-specific
+low-level performance analysis interface for profiling and tracing GPU compute applications.
+It supports GPU metrics, API tracing (HIP, HSA, ROCTx, RCCL), parallelism APIs (HIP, HSA, MPI,
+Kokkos, OpenMP), and includes rocprofv3 command line tool."""
+docurls = ['https://rocm.docs.amd.com/projects/rocprofiler-sdk/en/latest/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-systems/archive/refs/tags/']
+sources = [
+    {
+        'download_filename': f'therock-{_therock_version}.tar.gz',
+        'filename': f'rocm-systems-therock-{_therock_version}.tar.gz',
+    },
+    # Bundled dependencies for airgap builds (empty directories in therock tarball)
+    {
+        'download_filename': '20260107.1.tar.gz',
+        'filename': 'abseil-cpp-20260107.1.tar.gz',
+        'source_urls': ['https://github.com/abseil/abseil-cpp/archive/refs/tags/'],
+    },
+    {
+        'download_filename': 'rocprofiler.tar.gz',
+        'filename': 'PTL-rocprofiler.tar.gz',
+        'source_urls': ['https://github.com/jrmadsen/PTL/archive/refs/heads/'],
+    },
+    {
+        'download_filename': 'master.tar.gz',
+        'filename': 'yaml-cpp-master.tar.gz',
+        'source_urls': ['https://github.com/jbeder/yaml-cpp/archive/refs/heads/'],
+    },
+    {
+        'download_filename': 'rocprofiler.tar.gz',
+        'filename': 'cereal-rocprofiler.tar.gz',
+        'source_urls': ['https://github.com/jrmadsen/cereal/archive/refs/heads/'],
+    },
+    {
+        'download_filename': 'v44.0.tar.gz',
+        'filename': 'perfetto-v44.0.tar.gz',
+        'source_urls': ['https://github.com/google/perfetto/archive/refs/tags/'],
+    },
+    {
+        'download_filename': 'Release_3.12.tar.gz',
+        'filename': 'ELFIO-Release_3.12.tar.gz',
+        'source_urls': ['https://github.com/serge1/ELFIO/archive/refs/tags/'],
+    },
+    {
+        'download_filename': 'develop.tar.gz',
+        'filename': 'json-develop.tar.gz',
+        'source_urls': ['https://github.com/nlohmann/json/archive/refs/heads/'],
+    },
+]
+patches = ['rocprofiler-sdk-1.1.0_add-missing-headers-therock-10.0.patch']
+checksums = [
+    'f30517ed6d9e18cde104eb487f173e62fed0175083a9498ca383f8136a9f4eec',  # rocm-systems-therock-10.0.tar.gz
+    '4314e2a7cbac89cac25a2f2322870f343d81579756ceff7f431803c2c9090195',  # abseil-cpp-20260107.1.tar.gz
+    '394345c2f9f3d5d795cbfa412386622643e6b824107cef2486e07fb030246d68',  # PTL-rocprofiler.tar.gz
+    '86037fe45e9df6439d9b246bdcb8c0effee6b5ec172f337f58aa6002e2639a61',  # yaml-cpp-master.tar.gz
+    '1fdb0890477d572c0dca698ab50836d4f8ef7e996c0c88d74de4fea05b319527',  # cereal-rocprofiler.tar.gz
+    'db4162ee6495b1fcc13ba7aca77d67f9fd1766d184743137a04af8b1e3906b9d',  # perfetto-v44.0.tar.gz
+    'e4ebc9ce3d6916461bc3e7765bb45e6210f0a9b93978bf91e59b05388c024489',  # ELFIO-Release_3.12.tar.gz
+    'ae07b806a62920e6e913b7b3a33fdf6f0a8822ea8059d21b7b3e25989ac1a472',  # json-develop.tar.gz
+    '4fe05ad235106e18aa92c9ff91d0e5f03967a49847e2caab693b75691ceb6d3f',  # rocprofiler-sdk-1.1.0_add-missing-headers-therock-10.0.patch
+]
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+    ('pkgconf', '2.4.3'),  # Required by cmake for finding packages
+    ('pybind11', '3.0.0'),
+    ('OTF2', '3.1.1'),
+    ('fmt', '10.2.1'),  # fmt@:10 constraint - version <= 10, build-only for static linking
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('elfutils', '0.193'),
+    ('SQLite', '3.50.1'),
+    ('Python-bundle-PyPI', '2025.07'),
+    ('glog', '0.7.1'),
+    ('GOTCHA', '1.0.8'),  # Function interception library
+    ('aqlprofile', f'therock-{_therock_version}'),
+    ('RCCL', '2.30.4'),
+    ('rocprof-trace-decoder', '0.2.0'),  # ATT trace decoding library
+]
+
+# Build from the projects/rocprofiler-sdk subdirectory within rocm-systems archive
+start_dir = 'projects/rocprofiler-sdk'
+
+# Move already-extracted bundled dependencies into external/ directories for airgap builds
+# Remove empty placeholder dirs first, then move extracted sources
+# Also remove .gitmodules to prevent cmake from attempting git submodule checkout
+preconfigopts = ' && '.join([
+    f'rm -f %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/.gitmodules',
+    f'rmdir %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/abseil-cpp',
+    f'mv %(builddir)s/abseil-cpp-20260107.1 %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/abseil-cpp',
+    f'rmdir %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/ptl',
+    f'mv %(builddir)s/PTL-rocprofiler %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/ptl',
+    f'rmdir %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/yaml-cpp',
+    f'mv %(builddir)s/yaml-cpp-master %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/yaml-cpp',
+    f'rmdir %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/cereal',
+    f'mv %(builddir)s/cereal-rocprofiler %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/cereal',
+    f'rmdir %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/perfetto',
+    f'mv %(builddir)s/perfetto-44.0 %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/perfetto',
+    f'rmdir %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/elfio',
+    f'mv %(builddir)s/ELFIO-Release_3.12 %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/elfio',
+    f'rmdir %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/json',
+    f'mv %(builddir)s/json-develop %(builddir)s/rocm-systems-therock-{_therock_version}/projects/rocprofiler-sdk/external/json',
+    'true',  # End with a command that succeeds
+]) + ' && OTF2_ROOT=$EBROOTOTF2 '
+
+configopts = '-DROCPROFILER_SDK_BUILD_TESTS=OFF -DROCPROFILER_SDK_BUILD_SAMPLES=OFF '
+# Disable git submodule checkout - therock source is not a git repository
+configopts += '-DROCPROFILER_SUBMODULE_UPDATE=OFF '
+# ATT quick scan enabled - uses rocprof-trace-decoder dependency
+# Disable building external dependencies that we have as system packages
+configopts += '-DROCPROFILER_BUILD_FMT=OFF '  # Use system fmt
+configopts += '-Dfmt_DIR=$EBROOTFMT/lib/cmake/fmt '  # Point to fmt installation
+configopts += '-DCMAKE_FIND_LIBRARY_SUFFIXES=.a '  # Prefer static libraries for linking
+configopts += '-DROCPROFILER_BUILD_GLOG=OFF '  # Use system glog
+configopts += '-DROCPROFILER_BUILD_PYBIND11=OFF '  # Use system pybind11
+configopts += '-DROCPROFILER_BUILD_GOTCHA=OFF '  # Disable gotcha
+configopts += '-DROCPROFILER_BUILD_SQLITE3=OFF '  # Use system SQLite
+configopts += '-DROCPROFILER_BUILD_GTEST=OFF '  # Disable tests
+configopts += '-DROCPROFILER_BUILD_GHC_FS=OFF '  # Disable filesystem library
+# Let PTL, CEREAL, YAML-CPP, ELFIO, JSON, PERFETTO build from bundled empty directories (will use add_subdirectory)
+
+sanity_check_paths = {
+    'files': ['bin/rocprofv3', 'lib/librocprofiler-sdk.%s' % SHLIB_EXT],
+    'dirs': ['include/rocprofiler-sdk', 'share/rocprofiler-sdk'],
+}
+
+moduleclass = 'perf'

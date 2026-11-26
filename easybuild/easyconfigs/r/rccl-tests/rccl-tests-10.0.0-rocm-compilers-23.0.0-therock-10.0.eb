@@ -1,0 +1,44 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'rccl-tests'
+version = '10.0.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/rocm-systems/tree/develop/projects/rccl-tests'
+description = """RCCL Tests is a test suite for validating RCCL (ROCm Communication Collectives Library)
+functionality. It includes performance benchmarks and correctness tests for collective operations
+like AllReduce, Broadcast, Reduce, AllGather, and ReduceScatter on AMD GPUs."""
+docurls = ['https://rocm.docs.amd.com/projects/rccl/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-systems/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-systems-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['f30517ed6d9e18cde104eb487f173e62fed0175083a9498ca383f8136a9f4eec']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('RCCL', '2.30.4'),
+]
+
+# rccl-tests is located in projects/rccl-tests within rocm-systems archive
+srcdir = 'projects/rccl-tests'
+
+configopts = '-DHIP_PLATFORM=amd '
+
+sanity_check_paths = {
+    'files': ['bin/all_reduce_perf', 'bin/all_gather_perf', 'bin/broadcast_perf',
+              'bin/reduce_perf', 'bin/reduce_scatter_perf', 'bin/alltoall_perf'],
+    'dirs': ['bin'],
+}
+
+moduleclass = 'tools'

@@ -1,0 +1,32 @@
+Add missing fstream header for C++ compilation
+Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+--- a/projects/rocprofiler-sdk/source/lib/rocprofiler-sdk-rocpd/sql.cpp
++++ b/projects/rocprofiler-sdk/source/lib/rocprofiler-sdk-rocpd/sql.cpp
+@@ -49,6 +49,7 @@
+
+ #include <dlfcn.h>
+ #include <initializer_list>
++#include <fstream>
+ #include <unordered_map>
+
+ namespace rocpd
+--- a/projects/rocprofiler-sdk/source/lib/rocprofiler-sdk/counters/metrics.cpp
++++ b/projects/rocprofiler-sdk/source/lib/rocprofiler-sdk/counters/metrics.cpp
+@@ -49,6 +49,7 @@
+ #include <dlfcn.h>  // for dladdr
+ #include <cstdint>
+ #include <cstdlib>
++#include <fstream>
+ #include <map>
+ #include <memory>
+ #include <system_error>
+--- a/projects/rocprofiler-sdk/source/lib/rocprofiler-sdk-rocattach/auxv.cpp
++++ b/projects/rocprofiler-sdk/source/lib/rocprofiler-sdk-rocattach/auxv.cpp
+@@ -26,6 +26,7 @@
+ #include "auxv.hpp"
+
+ #include <vector>
++#include <fstream>
+
+ // /proc/<pid>/auxv is a binary file containing the auxiliary vector passed to

@@ -1,0 +1,45 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'rocr-debug-agent'
+version = '2.1.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/rocm-systems/tree/develop/projects/rocr-debug-agent'
+description = """ROCr Debug Agent is a library that can be loaded by the ROCm runtime (ROCr)
+to provide GPU debugging support. It enables breakpoints, single-stepping, and
+memory inspection for GPU kernels running on AMD GPUs. It works with rocdbgapi
+to provide full debugging capabilities."""
+docurls = ['https://rocm.docs.amd.com/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-systems/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-systems-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['f30517ed6d9e18cde104eb487f173e62fed0175083a9498ca383f8136a9f4eec']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('rocdbgapi', '0.80.0'),
+    ('elfutils', '0.193'),
+]
+
+# rocr-debug-agent is located in projects/rocr-debug-agent within rocm-systems archive
+srcdir = 'projects/rocr-debug-agent'
+
+configopts = '-DENABLE_TESTS=OFF '
+
+sanity_check_paths = {
+    'files': ['lib/librocm-debug-agent.%s' % SHLIB_EXT],
+    'dirs': ['lib'],
+}
+
+moduleclass = 'tools'

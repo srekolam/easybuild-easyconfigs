@@ -1,0 +1,31 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ConfigureMake'
+
+name = 'libnl'
+version = '3.3.0'
+
+homepage = 'https://www.infradead.org/~tgr/libnl/'
+description = """libnl is a library for applications dealing with netlink sockets.
+The library provides an interface for raw netlink messaging and various netlink
+family specific interfaces."""
+
+toolchain = {'name': 'GCCcore', 'version': '14.3.0'}
+
+source_urls = ['https://github.com/thom311/libnl/releases/download/libnl3_3_0/']
+sources = [SOURCE_TAR_GZ]
+checksums = ['705468b5ae4cd1eb099d2d1c476d6a3abe519bc2810becf12fb1e32de1e074e4']
+
+builddependencies = [
+    ('binutils', '2.44'),
+    ('flex', '2.6.4'),
+    ('Bison', '3.8.2'),
+]
+
+sanity_check_paths = {
+    'files': ['lib/libnl-3.%s' % SHLIB_EXT, 'lib/libnl-genl-3.%s' % SHLIB_EXT,
+              'lib/pkgconfig/libnl-3.0.pc', 'lib/pkgconfig/libnl-genl-3.0.pc'],
+    'dirs': ['include/libnl3'],
+}
+
+moduleclass = 'lib'

@@ -1,0 +1,77 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'rocprofiler'
+version = '2.0.0'
+_therock_version = '10.0'  # GitHub tag version for therock releases
+
+homepage = 'https://github.com/ROCm/rocprofiler'
+description = """ROCProfiler is AMD's tooling infrastructure that provides a hardware specific
+low level performance analysis interface for the profiling and the tracing of GPU compute
+applications. Note: ROCProfiler v1/v2 is deprecated - consider using rocprofiler-sdk (v3) instead."""
+docurls = ['https://rocm.docs.amd.com/projects/rocprofiler/en/latest/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-systems/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-systems-therock-{_therock_version}.tar.gz',
+}]
+patches = ['rocprofiler-2.0.0_respect-build-options.patch']
+checksums = [
+    'f30517ed6d9e18cde104eb487f173e62fed0175083a9498ca383f8136a9f4eec',  # rocm-systems-therock-10.0.tar.gz
+    'da3d54cafa11b8ebef9e266e038bdc4475f732cb8fd4f294ef1b75cf1705070c',  # rocprofiler-2.0.0_respect-build-options.patch
+]
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+    ('lxml', '6.0.0'),
+    ('CppHeaderParser', '2.7.4'),
+    ('googletest', '1.17.0'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('rocTracer', '4.1.0'),
+    ('rocm-smi', '7.8.0'),
+    ('rocminfo', '1.0.0'),
+    ('aqlprofile', 'therock-10.0'),
+    ('Python', '3.13.5'),
+    ('Python-bundle-PyPI', '2025.07'),
+    ('PyYAML', '6.0.2'),
+    ('elfutils', '0.193'),
+]
+
+# rocprofiler is located in projects/rocprofiler within rocm-systems archive
+srcdir = 'projects/rocprofiler'
+
+# Ensure that full path of compilers is picked up, as rpath wrappers are not correctly used otherwise.
+abs_path_compilers = True
+
+configopts = '-DPROF_API_HEADER_PATH=$EBROOTROCTRACER/include/roctracer '
+configopts += '-DROCM_ROOT_DIR=$EBROOTHIP '
+configopts += '-DROCPROFILER_BUILD_PLUGIN_PERFETTO=OFF '
+configopts += '-DROCPROFILER_BUILD_PLUGIN_CTF=OFF '
+configopts += '-DROCPROFILER_BUILD_TESTS:BOOL=OFF '
+configopts += '-DROCPROFILER_BUILD_SAMPLES:BOOL=OFF '
+
+# Create symlink to rocm_agent_enumerator so rocprof can find it
+postinstallcmds = [
+    'ln -s $EBROOTROCMINFO/bin/rocm_agent_enumerator %(installdir)s/bin/rocm_agent_enumerator',
+]
+
+sanity_check_paths = {
+    'files': ['bin/rocprof',
+              'bin/rocprofv2',
+              f'lib/librocprofiler64.{SHLIB_EXT}',
+              f'lib/librocprofiler64v2.{SHLIB_EXT}'],
+    'dirs': ['include/rocprofiler',
+             'lib/rocprofiler'],
+}
+
+# rocprof -h exits with code 1, so we just check the files exist
+# sanity_check_commands = ['rocprof -h']
+
+moduleclass = 'perf'

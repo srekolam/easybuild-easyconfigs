@@ -1,0 +1,43 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'hipthreads'
+version = '0.1.1'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/hipthreads'
+description = """hipthreads is a library that provides thread-level parallelism
+primitives for HIP applications on AMD GPUs."""
+docurls = ['https://rocm.docs.amd.com/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-libraries/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-libraries-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['eb7f255d6627d3cfb312a7bcf41d701517ecaeac88382b56f2bde8d4947ea592']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('libhipcxx', '3.0.2'),
+]
+
+srcdir = 'projects/hipthreads'
+
+configopts = '-DBUILD_TESTING=OFF '
+
+sanity_check_paths = {
+    'files': ['lib/hipthreads/libhipthreads.a',
+              'lib/cmake/hipthreads/hipthreadsConfig.cmake'],
+    'dirs': ['lib/cmake/hipthreads',
+             'include/hipthreads'],
+}
+
+moduleclass = 'lib'

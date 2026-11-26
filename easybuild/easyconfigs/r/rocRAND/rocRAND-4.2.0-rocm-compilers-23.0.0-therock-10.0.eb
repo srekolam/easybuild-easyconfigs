@@ -1,0 +1,44 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'rocRAND'
+version = '4.2.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/rocRAND'
+description = """rocRAND provides functions that generate pseudo-random and quasi-random numbers.
+The library is optimized for AMD GPUs using the ROCm software stack."""
+docurls = ['https://rocm.docs.amd.com/projects/rocRAND/en/latest/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-libraries/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-libraries-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['eb7f255d6627d3cfb312a7bcf41d701517ecaeac88382b56f2bde8d4947ea592']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+]
+
+srcdir = 'projects/rocrand'
+
+configopts = '-DBUILD_TEST=OFF '
+configopts += '-DBUILD_BENCHMARK=OFF '
+
+sanity_check_paths = {
+    'files': [f'lib/librocrand.{SHLIB_EXT}',
+              'lib/cmake/rocrand/rocrand-config.cmake',
+              'include/rocrand/rocrand.h'],
+    'dirs': ['lib/cmake/rocrand',
+             'include/rocrand'],
+}
+
+moduleclass = 'lib'

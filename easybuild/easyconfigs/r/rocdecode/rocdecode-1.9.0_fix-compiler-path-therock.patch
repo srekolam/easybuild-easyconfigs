@@ -1,0 +1,28 @@
+Fix compiler path for TheRock/EasyBuild where amdclang++ is in ROCm-LLVM, not HIP
+When CC/CXX environment variables are set (by EasyBuild toolchain), use find_program
+to locate the compiler in PATH instead of hardcoding the path.
+Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+diff -Naur rocm-systems-therock-10.0.orig/projects/rocdecode/CMakeLists.txt rocm-systems-therock-10.0/projects/rocdecode/CMakeLists.txt
+--- rocm-systems-therock-10.0.orig/projects/rocdecode/CMakeLists.txt	2026-11-01 12:00:00.000000000 +0000
++++ rocm-systems-therock-10.0/projects/rocdecode/CMakeLists.txt	2026-11-18 12:00:00.000000000 +0000
+@@ -40,9 +40,17 @@
+ set(CMAKE_CXX_STANDARD 17)
+ set(CMAKE_CXX_STANDARD_REQUIRED On)
+ set(CMAKE_CXX_EXTENSIONS ON)
+-if (NOT DEFINED CMAKE_CXX_COMPILER)
+-  set(CMAKE_C_COMPILER ${ROCM_PATH}/lib/llvm/bin/amdclang)
+-  set(CMAKE_CXX_COMPILER ${ROCM_PATH}/lib/llvm/bin/amdclang++)
++# For EasyBuild/TheRock: when CC/CXX are set via environment (toolchain),
++# or when amdclang++ is not at the expected path, use find_program
++if(NOT DEFINED CMAKE_CXX_COMPILER AND NOT DEFINED ENV{CXX})
++  if(EXISTS "${ROCM_PATH}/lib/llvm/bin/amdclang++")
++    set(CMAKE_C_COMPILER ${ROCM_PATH}/lib/llvm/bin/amdclang)
++    set(CMAKE_CXX_COMPILER ${ROCM_PATH}/lib/llvm/bin/amdclang++)
++  else()
++    # Compiler should be in PATH from ROCm-LLVM module
++    find_program(CMAKE_C_COMPILER NAMES amdclang clang REQUIRED)
++    find_program(CMAKE_CXX_COMPILER NAMES amdclang++ clang++ REQUIRED)
++  endif()
+ endif()
+
+ # rocdecode Version

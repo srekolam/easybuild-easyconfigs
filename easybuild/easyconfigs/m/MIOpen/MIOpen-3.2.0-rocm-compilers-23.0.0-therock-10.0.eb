@@ -1,0 +1,51 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'MIOpen'
+version = '3.2.0'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/MIOpen'
+description = """MIOpen is AMD's open-source, deep-learning primitives library.
+MIOpen supports both forward and backward passes for convolution, pooling, batch
+normalization, and activation layers."""
+docurls = ['https://rocm.docs.amd.com/projects/MIOpen/en/latest/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-libraries/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-libraries-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['eb7f255d6627d3cfb312a7bcf41d701517ecaeac88382b56f2bde8d4947ea592']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('rocBLAS', '5.2.0'),
+    ('composable_kernel', '1.0.0'),
+    ('rocRAND', '4.2.0'),
+    ('Boost', '1.88.0'),
+    ('SQLite', '3.50.0'),
+]
+
+srcdir = 'projects/miopen'
+
+configopts = '-DMIOPEN_BACKEND=HIP '
+configopts += '-DBUILD_TESTING=OFF '
+configopts += '-DMIOPEN_TEST_ALL=OFF '
+
+sanity_check_paths = {
+    'files': [f'lib/libMIOpen.{SHLIB_EXT}',
+              'lib/cmake/miopen/miopen-config.cmake',
+              'include/miopen/miopen.h'],
+    'dirs': ['lib/cmake/miopen',
+             'include/miopen'],
+}
+
+moduleclass = 'lib'

@@ -1,0 +1,43 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'rocminfo'
+version = '1.0.0'
+_therock_version = '10.0'  # GitHub tag version for therock releases
+
+homepage = 'https://github.com/RadeonOpenCompute/rocminfo'
+description = """ROCm Application for Reporting System Info"""
+docurls = ['https://rocm.docs.amd.com/projects/rocminfo/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-systems/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-systems-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['f30517ed6d9e18cde104eb487f173e62fed0175083a9498ca383f8136a9f4eec']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+]
+
+dependencies = [
+    ('Python', '3.13.5'),  # Needed for 'rocm_agent_enumerator' which is a Python script
+    ('glog', '0.7.1'),
+    ('elfutils', '0.193'),
+    ('libdrm', '2.4.125'),
+    ('numactl', '2.0.19'),
+    ('rocprofiler-register', '0.6.0', f'-therock-{_therock_version}'),
+]
+
+# rocminfo is located in projects/rocminfo within rocm-systems archive
+srcdir = 'projects/rocminfo'
+
+sanity_check_paths = {
+    'files': ['bin/rocminfo', 'bin/rocm_agent_enumerator'],
+    'dirs': [],
+}
+
+moduleclass = 'tools'

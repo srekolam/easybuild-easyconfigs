@@ -1,0 +1,47 @@
+# Author: sreenivasamurthy kolam <sreenivasamurthy.kolam@amd.com>
+
+easyblock = 'ROCmComponent'
+
+name = 'rocFFT'
+version = '1.0.36'
+_therock_version = '10.0'
+
+homepage = 'https://github.com/ROCm/rocFFT'
+description = """rocFFT is a software library for computing Fast Fourier Transforms (FFT)
+written in HIP. It is designed to run on AMD GPUs using the ROCm software stack."""
+docurls = ['https://rocm.docs.amd.com/projects/rocFFT/en/latest/']
+
+toolchain = {'name': 'rocm-compilers', 'version': f'23.0.0-therock-{_therock_version}'}
+
+source_urls = ['https://github.com/ROCm/rocm-libraries/archive/refs/tags/']
+sources = [{
+    'download_filename': f'therock-{_therock_version}.tar.gz',
+    'filename': f'rocm-libraries-therock-{_therock_version}.tar.gz',
+}]
+checksums = ['eb7f255d6627d3cfb312a7bcf41d701517ecaeac88382b56f2bde8d4947ea592']
+
+builddependencies = [
+    ('CMake', '3.31.8'),
+    ('Python', '3.13.5'),
+]
+
+dependencies = [
+    ('HIP', '10.0.0'),
+    ('rocRAND', '4.2.0'),
+]
+
+srcdir = 'projects/rocfft'
+
+configopts = '-DBUILD_CLIENTS_TESTS=OFF '
+configopts += '-DBUILD_CLIENTS_BENCHMARKS=OFF '
+configopts += '-DBUILD_CLIENTS_SAMPLES=OFF '
+
+sanity_check_paths = {
+    'files': [f'lib/librocfft.{SHLIB_EXT}',
+              'lib/cmake/rocfft/rocfft-config.cmake',
+              'include/rocfft/rocfft.h'],
+    'dirs': ['lib/cmake/rocfft',
+             'include/rocfft'],
+}
+
+moduleclass = 'lib'
